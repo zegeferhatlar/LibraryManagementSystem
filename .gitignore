@@ -1,0 +1,9 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Output directory
+out/
+
+# OS-specific files
+.DS_Store

@@ -1,15 +1,36 @@
-import com.zegeferhatlar.library.model.*;
+import com.zegeferhatlar.library.model.Book;
+import com.zegeferhatlar.library.model.StudentMember;
+import com.zegeferhatlar.library.service.LibraryManager;
 
 public class Main {
     public static void main(String[] args) {
 
-        Book book = new Book("123", "Küçük Prens", "Exupery");
-        StudentMember student = new StudentMember(10, "Ali Öğrenci");
+        LibraryManager manager = new LibraryManager();
 
-        Loan loan = new Loan(book, student);
+        // 1) Book ve Member ekle
+        Book book1 = new Book("111", "Küçük Prens", "Exupery");
+        Book book2 = new Book("222", "Suç ve Ceza", "Dostoyevski");
+        manager.addBook(book1);
+        manager.addBook(book2);
 
-        System.out.println("Ödünç alınan tarih: " + loan.getLoanDate());
-        System.out.println("Gecikme günleri: " + loan.calculateOverdueDays());
-        System.out.println("Gecikme ücreti: " + loan.calculateLateFee());
+        StudentMember student = new StudentMember(1, "Ali Öğrenci");
+        manager.addMember(student);
+
+        // 2) Title'a göre arama
+        System.out.println("Title 'Küçük' ile arama sonucu:");
+        manager.searchByTitle("Küçük").forEach(System.out::println);
+
+        // 3) Book ödünç al
+        System.out.println("\nÖdünç alma denemesi:");
+        manager.borrowBook(1, "111");
+
+        // 4) Aynı book'u tekrar ödünç almaya çalışma
+        System.out.println("\nAynı book'u tekrar alma denemesi:");
+        manager.borrowBook(1, "111");
+
+        // 5) Book iade et (gecikme yoksa 0 gelir)
+        System.out.println("\nİade denemesi:");
+        double fee = manager.returnBook(1, "111");
+        System.out.println("Dönen gecikme ücreti: " + fee);
     }
 }

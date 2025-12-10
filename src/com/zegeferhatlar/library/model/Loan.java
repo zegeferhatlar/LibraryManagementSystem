@@ -20,11 +20,15 @@ public class Loan {
      * @param book   the borrowed book
      * @param member the member who borrows the book
      */
-    public Loan(Book book, Member member) {
+    public Loan(Book book, Member member, LocalDate loanDate) {
         this.book = book;
         this.member = member;
-        this.loanDate = LocalDate.now();
+        this.loanDate = loanDate;
         this.returnDate = null;
+    }
+
+    public Loan(Book book, Member member) {
+        this(book, member, LocalDate.now());
     }
 
     public Book getBook() {

@@ -151,8 +151,6 @@ public class LibraryManager implements Searchable {
         return fee;
     }
 
-    // --- Getter'lar (ileride lazım olabilir) ---
-
     public List<Book> getBooks() {
         return books;
     }
@@ -164,4 +162,34 @@ public class LibraryManager implements Searchable {
     public List<Loan> getLoans() {
         return loans;
     }
+
+    /**
+     * Returns all active loans (not returned yet).
+     */
+    public List<Loan> getActiveLoans() {
+        return loans.stream()
+                .filter(l -> l.getReturnDate() == null)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns active loans for a specific member.
+     */
+    public List<Loan> getActiveLoansForMember(int memberId) {
+        return loans.stream()
+                .filter(l -> l.getReturnDate() == null)
+                .filter(l -> l.getMember().getId() == memberId)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns loans that are overdue (gecikmiş).
+     */
+    public List<Loan> getOverdueLoans() {
+        return loans.stream()
+                .filter(l -> l.getReturnDate() == null)
+                .filter(l -> l.calculateOverdueDays() > 0)
+                .collect(Collectors.toList());
+    }
+
 }

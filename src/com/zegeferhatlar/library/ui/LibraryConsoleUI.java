@@ -26,7 +26,10 @@ public class LibraryConsoleUI {
             System.out.println("4) Kitap Ödünç Al");
             System.out.println("5) Kitap İade Et");
             System.out.println("6) Kitapları Listele");
-            System.out.println("7) Çıkış");
+            System.out.println("7) Üyeleri Listele");
+            System.out.println("8) Aktif Loans Listele");
+            System.out.println("9) Overdue Loans Listele");
+            System.out.println("0) Çıkış");
             System.out.print("Seçenek: ");
 
             int choice = scanner.nextInt();
@@ -39,12 +42,16 @@ public class LibraryConsoleUI {
                 case 4 -> borrowBook();
                 case 5 -> returnBook();
                 case 6 -> listBooks();
-                case 7 -> {
+                case 7 -> listMembers();
+                case 8 -> listActiveLoans();
+                case 9 -> listOverdueLoans();
+                case 0 -> {
                     System.out.println("Programdan çıkılıyor...");
                     return;
                 }
                 default -> System.out.println("Geçersiz seçim!");
             }
+
         }
     }
 
@@ -116,4 +123,49 @@ public class LibraryConsoleUI {
     private void listBooks() {
         manager.getBooks().forEach(System.out::println);
     }
+
+    private void listMembers() {
+        System.out.println("\n--- Üye Listesi ---");
+        if (manager.getMembers().isEmpty()) {
+            System.out.println("Kayıtlı üye yok.");
+            return;
+        }
+        manager.getMembers().forEach(m -> System.out.println("ID: " + m.getId() + " | Name: " + m.getName()));
+    }
+
+    private void listActiveLoans() {
+        System.out.println("\n--- Aktif Loans ---");
+        var activeLoans = manager.getActiveLoans();
+
+        if (activeLoans.isEmpty()) {
+            System.out.println("Aktif loan yok.");
+            return;
+        }
+
+        activeLoans.forEach(l -> {
+            System.out.println("Member: " + l.getMember().getName()
+                    + " | Book: " + l.getBook().getTitle()
+                    + " | LoanDate: " + l.getLoanDate());
+        });
+    }
+
+    private void listOverdueLoans() {
+        System.out.println("\n--- Overdue Loans (Gecikmiş) ---");
+        var overdueLoans = manager.getOverdueLoans();
+
+        if (overdueLoans.isEmpty()) {
+            System.out.println("Gecikmiş loan yok.");
+            return;
+        }
+
+        overdueLoans.forEach(l -> {
+            int overdueDays = l.calculateOverdueDays();
+            double fee = l.calculateLateFee();
+            System.out.println("Member: " + l.getMember().getName()
+                    + " | Book: " + l.getBook().getTitle()
+                    + " | OverdueDays: " + overdueDays
+                    + " | Fee: " + fee);
+        });
+    }
+
 }

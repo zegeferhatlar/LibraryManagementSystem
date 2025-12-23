@@ -1,9 +1,10 @@
-# IntelliJ IDEA
+# IntelliJ
 .idea/
 *.iml
-
-# Output directory
 out/
 
-# OS-specific files
+# Mac
 .DS_Store
+
+# Runtime data
+data/

@@ -47,6 +47,10 @@ public class Loan {
         return returnDate;
     }
 
+    public void setReturnDate(LocalDate returnDate) {
+        this.returnDate = returnDate;
+    }
+
     /**
      * Marks the book as returned today.
      */

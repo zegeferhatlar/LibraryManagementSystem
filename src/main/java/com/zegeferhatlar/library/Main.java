@@ -1,3 +1,5 @@
+package com.zegeferhatlar.library;
+
 import com.zegeferhatlar.library.ui.LibraryConsoleUI;
 
 public class Main {

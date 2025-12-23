@@ -1,3 +1,5 @@
+package com.zegeferhatlar.library;
+
 import com.zegeferhatlar.library.model.Book;
 import com.zegeferhatlar.library.model.Loan;
 import com.zegeferhatlar.library.model.StudentMember;

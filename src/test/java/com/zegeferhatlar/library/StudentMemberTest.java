@@ -1,3 +1,5 @@
+package com.zegeferhatlar.library;
+
 import com.zegeferhatlar.library.model.StudentMember;
 import org.junit.jupiter.api.Test;
 

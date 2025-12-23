@@ -13,6 +13,8 @@ public class LibraryConsoleUI {
     public LibraryConsoleUI() {
         this.manager = new LibraryManager();
         this.scanner = new Scanner(System.in);
+
+        manager.loadFromFiles();
     }
 
     public void start() {
@@ -46,6 +48,8 @@ public class LibraryConsoleUI {
                 case 8 -> listActiveLoans();
                 case 9 -> listOverdueLoans();
                 case 0 -> {
+                    System.out.println("Veriler kaydediliyor...");
+                    manager.saveToFiles();
                     System.out.println("Programdan çıkılıyor...");
                     return;
                 }

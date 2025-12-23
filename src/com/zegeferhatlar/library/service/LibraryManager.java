@@ -192,4 +192,37 @@ public class LibraryManager implements Searchable {
                 .collect(Collectors.toList());
     }
 
+    public void saveToFiles() {
+        FileStorage storage = new FileStorage();
+        try {
+            storage.saveBooks(books);
+            storage.saveMembers(members);
+            storage.saveLoans(loans);
+            System.out.println("Veriler dosyaya kaydedildi. (data/ klasörü)");
+        } catch (Exception e) {
+            System.out.println("Kaydetme hatası: " + e.getMessage());
+        }
+    }
+
+    public void loadFromFiles() {
+        FileStorage storage = new FileStorage();
+        try {
+            List<Book> loadedBooks = storage.loadBooks();
+            List<Member> loadedMembers = storage.loadMembers();
+            List<Loan> loadedLoans = storage.loadLoans(loadedBooks, loadedMembers);
+
+            this.books.clear();
+            this.members.clear();
+            this.loans.clear();
+
+            this.books.addAll(loadedBooks);
+            this.members.addAll(loadedMembers);
+            this.loans.addAll(loadedLoans);
+
+            System.out.println("Veriler dosyadan yüklendi. (data/ klasörü)");
+        } catch (Exception e) {
+            System.out.println("Yükleme hatası: " + e.getMessage());
+        }
+    }
+
 }

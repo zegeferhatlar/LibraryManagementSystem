@@ -36,8 +36,7 @@ public class LibraryConsoleUI {
             System.out.println("0) Çıkış");
             System.out.print("Seçenek: ");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // buffer temizleme
+            int choice = readInt();
 
             switch (choice) {
                 case 1 -> addBook();
@@ -81,8 +80,7 @@ public class LibraryConsoleUI {
 
     private void addMember() {
         System.out.print("Üye ID: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
+        int id = readInt();
 
         System.out.print("Üye adı: ");
         String name = scanner.nextLine();
@@ -107,8 +105,7 @@ public class LibraryConsoleUI {
 
     private void borrowBook() {
         System.out.print("Üye ID: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
+        int id = readInt();
 
         System.out.print("ISBN: ");
         String isbn = scanner.nextLine();
@@ -118,8 +115,7 @@ public class LibraryConsoleUI {
 
     private void returnBook() {
         System.out.print("Üye ID: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
+        int id = readInt();
 
         System.out.print("ISBN: ");
         String isbn = scanner.nextLine();
@@ -196,6 +192,17 @@ public class LibraryConsoleUI {
             System.out.println("Kitap silindi.");
         } else {
             System.out.println("Kitap bulunamadı (silinemedi).");
+        }
+    }
+
+    private int readInt() {
+        while (true) {
+            String line = scanner.nextLine().trim();
+            try {
+                return Integer.parseInt(line);
+            } catch (NumberFormatException e) {
+                System.out.print("Geçersiz sayı, tekrar girin: ");
+            }
         }
     }
 

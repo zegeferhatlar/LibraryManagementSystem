@@ -53,4 +53,25 @@ public class LibraryManagerTest {
         Loan second = manager.borrowBook(1, "111");
         assertNull(second, "Aynı book ikinci kez ödünç alınamamalı");
     }
+
+    @Test
+    void searchByAuthor_shouldFindBooks_caseInsensitive() {
+        LibraryManager manager = new LibraryManager();
+        manager.addBook(new Book("1", "Dune", "Frank Herbert"));
+        manager.addBook(new Book("2", "Foundation", "Isaac Asimov"));
+
+        var results = manager.searchByAuthor("herbert");
+
+        assertEquals(1, results.size());
+        assertEquals("1", results.get(0).getIsbn());
+    }
+
+    @Test
+    void removeBook_shouldRemoveByIsbn() {
+        LibraryManager manager = new LibraryManager();
+        manager.addBook(new Book("1", "Dune", "Frank Herbert"));
+
+        assertTrue(manager.removeBook("1"), "removeBook true dönmeli");
+        assertNull(manager.findBookByIsbn("1"), "Silinen kitap artık bulunmamalı");
+    }
 }

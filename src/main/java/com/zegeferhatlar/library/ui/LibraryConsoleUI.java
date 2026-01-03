@@ -31,6 +31,8 @@ public class LibraryConsoleUI {
             System.out.println("7) Üyeleri Listele");
             System.out.println("8) Aktif Loans Listele");
             System.out.println("9) Overdue Loans Listele");
+            System.out.println("10) Kitap Ara (Author)");
+            System.out.println("11) Kitap Sil");
             System.out.println("0) Çıkış");
             System.out.print("Seçenek: ");
 
@@ -47,6 +49,8 @@ public class LibraryConsoleUI {
                 case 7 -> listMembers();
                 case 8 -> listActiveLoans();
                 case 9 -> listOverdueLoans();
+                case 10 -> searchBookByAuthor();
+                case 11 -> removeBook();
                 case 0 -> {
                     System.out.println("Veriler kaydediliyor...");
                     manager.saveToFiles();
@@ -170,6 +174,29 @@ public class LibraryConsoleUI {
                     + " | OverdueDays: " + overdueDays
                     + " | Fee: " + fee);
         });
+    }
+    private void searchBookByAuthor() {
+        System.out.print("Aranacak author: ");
+        String author = scanner.nextLine();
+
+        var results = manager.searchByAuthor(author);
+        if (results.isEmpty()) {
+            System.out.println("Sonuç bulunamadı.");
+        } else {
+            results.forEach(System.out::println);
+        }
+    }
+
+    private void removeBook() {
+        System.out.print("Silinecek kitabın ISBN'i: ");
+        String isbn = scanner.nextLine();
+
+        boolean removed = manager.removeBook(isbn);
+        if (removed) {
+            System.out.println("Kitap silindi.");
+        } else {
+            System.out.println("Kitap bulunamadı (silinemedi).");
+        }
     }
 
 }

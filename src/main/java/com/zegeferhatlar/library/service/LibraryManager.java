@@ -1,6 +1,7 @@
 package com.zegeferhatlar.library.service;
 
 import com.zegeferhatlar.library.model.Book;
+import com.zegeferhatlar.library.model.Librarian;
 import com.zegeferhatlar.library.model.Loan;
 import com.zegeferhatlar.library.model.Member;
 
@@ -17,11 +18,13 @@ public class LibraryManager implements Searchable {
     private List<Book> books;
     private List<Member> members;
     private List<Loan> loans;
+    private List<Librarian> librarians;
 
     public LibraryManager() {
         this.books = new ArrayList<>();
         this.members = new ArrayList<>();
         this.loans = new ArrayList<>();
+        this.librarians = new ArrayList<>();
     }
 
     // --- Book operations ---
@@ -52,6 +55,23 @@ public class LibraryManager implements Searchable {
                 .filter(m -> m.getId() == id)
                 .findFirst()
                 .orElse(null);
+    }
+
+    // --- Librarian operations ---
+
+    public void addLibrarian(Librarian librarian) {
+        librarians.add(librarian);
+    }
+
+    public Librarian findLibrarianByUsername(String username) {
+        return librarians.stream()
+                .filter(l -> l.getUsername().equals(username))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public List<Librarian> getLibrarians() {
+        return librarians;
     }
 
     // --- Searchable implementation ---
@@ -198,6 +218,7 @@ public class LibraryManager implements Searchable {
             storage.saveBooks(books);
             storage.saveMembers(members);
             storage.saveLoans(loans);
+            storage.saveLibrarians(librarians);
             System.out.println("Veriler dosyaya kaydedildi. (data/ klasörü)");
         } catch (Exception e) {
             System.out.println("Kaydetme hatası: " + e.getMessage());
@@ -210,14 +231,17 @@ public class LibraryManager implements Searchable {
             List<Book> loadedBooks = storage.loadBooks();
             List<Member> loadedMembers = storage.loadMembers();
             List<Loan> loadedLoans = storage.loadLoans(loadedBooks, loadedMembers);
+            List<Librarian> loadedLibrarians = storage.loadLibrarians();
 
             this.books.clear();
             this.members.clear();
             this.loans.clear();
+            this.librarians.clear();
 
             this.books.addAll(loadedBooks);
             this.members.addAll(loadedMembers);
             this.loans.addAll(loadedLoans);
+            this.librarians.addAll(loadedLibrarians);
 
             System.out.println("Veriler dosyadan yüklendi. (data/ klasörü)");
         } catch (Exception e) {

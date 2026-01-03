@@ -108,16 +108,34 @@ public class FileStorage {
 
             while ((line = reader.readLine()) != null) {
                 String[] parts = splitCsvLine(line);
+
+                // En az: type,id,name olmalı
+                if (parts.length < 3) continue;
+
                 // type,id,name,maxBooks
                 String type = parts[0];
-                int id = Integer.parseInt(parts[1]);
+                int id;
+                try {
+                    id = Integer.parseInt(parts[1]);
+                } catch (NumberFormatException e) {
+                    continue; // bozuk satır
+                }
+
                 String name = uncsv(parts[2]);
 
-                // maxBooks dosyada var ama StudentMember default 5 zaten; yine de kayıtlı
-                // tutuyoruz.
-                // Şimdilik sadece STUDENT destekliyoruz:
+                int maxBooks = 5; // default
+                if (parts.length >= 4) {
+                    try {
+                        maxBooks = Integer.parseInt(parts[3]);
+                    } catch (NumberFormatException ignored) {
+                        // default kalsın
+                    }
+                }
+
                 if ("STUDENT".equalsIgnoreCase(type)) {
-                    members.add(new StudentMember(id, name));
+                    StudentMember sm = new StudentMember(id, name);
+                    sm.setMaxBooks(maxBooks);   // <-- ASIL DÜZELTME
+                    members.add(sm);
                 }
             }
         }

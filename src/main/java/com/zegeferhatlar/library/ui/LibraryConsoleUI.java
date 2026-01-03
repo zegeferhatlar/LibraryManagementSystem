@@ -1,5 +1,6 @@
 package com.zegeferhatlar.library.ui;
 
+import com.zegeferhatlar.library.service.AuthenticationService;
 import com.zegeferhatlar.library.service.LibraryManager;
 import com.zegeferhatlar.library.model.Book;
 import com.zegeferhatlar.library.model.StudentMember;
@@ -8,10 +9,12 @@ import java.util.Scanner;
 public class LibraryConsoleUI {
 
     private LibraryManager manager;
+    private AuthenticationService authService;
     private Scanner scanner;
 
     public LibraryConsoleUI() {
         this.manager = new LibraryManager();
+        this.authService = new AuthenticationService(manager);
         this.scanner = new Scanner(System.in);
 
         manager.loadFromFiles();
@@ -22,8 +25,11 @@ public class LibraryConsoleUI {
 
         while (true) {
             System.out.println("\n--- Menü ---");
-            System.out.println("1) Kitap Ekle");
-            System.out.println("2) Üye Ekle");
+            if (authService.isLoggedIn()) {
+                System.out.println("Giriş yapıldı: " + authService.getCurrentLibrarianName());
+            }
+            System.out.println("1) Kitap Ekle " + (authService.isLoggedIn() ? "" : "(Kütüphaneci girişi gerekli)"));
+            System.out.println("2) Üye Ekle " + (authService.isLoggedIn() ? "" : "(Kütüphaneci girişi gerekli)"));
             System.out.println("3) Kitap Ara (Title)");
             System.out.println("4) Kitap Ödünç Al");
             System.out.println("5) Kitap İade Et");
@@ -32,7 +38,9 @@ public class LibraryConsoleUI {
             System.out.println("8) Aktif Loans Listele");
             System.out.println("9) Overdue Loans Listele");
             System.out.println("10) Kitap Ara (Author)");
-            System.out.println("11) Kitap Sil");
+            System.out.println("11) Kitap Sil " + (authService.isLoggedIn() ? "" : "(Kütüphaneci girişi gerekli)"));
+            System.out.println("12) Kütüphaneci Girişi");
+            System.out.println("13) Kütüphaneci Çıkışı");
             System.out.println("0) Çıkış");
             System.out.print("Seçenek: ");
 
@@ -50,6 +58,8 @@ public class LibraryConsoleUI {
                 case 9 -> listOverdueLoans();
                 case 10 -> searchBookByAuthor();
                 case 11 -> removeBook();
+                case 12 -> loginLibrarian();
+                case 13 -> logoutLibrarian();
                 case 0 -> {
                     System.out.println("Veriler kaydediliyor...");
                     manager.saveToFiles();
@@ -63,6 +73,11 @@ public class LibraryConsoleUI {
     }
 
     private void addBook() {
+        if (!authService.isLoggedIn()) {
+            System.out.println("Bu işlem için kütüphaneci girişi gereklidir!");
+            return;
+        }
+
         System.out.print("ISBN: ");
         String isbn = scanner.nextLine();
 
@@ -79,6 +94,11 @@ public class LibraryConsoleUI {
     }
 
     private void addMember() {
+        if (!authService.isLoggedIn()) {
+            System.out.println("Bu işlem için kütüphaneci girişi gereklidir!");
+            return;
+        }
+
         System.out.print("Üye ID: ");
         int id = readInt();
 
@@ -171,6 +191,7 @@ public class LibraryConsoleUI {
                     + " | Fee: " + fee);
         });
     }
+
     private void searchBookByAuthor() {
         System.out.print("Aranacak author: ");
         String author = scanner.nextLine();
@@ -184,6 +205,11 @@ public class LibraryConsoleUI {
     }
 
     private void removeBook() {
+        if (!authService.isLoggedIn()) {
+            System.out.println("Bu işlem için kütüphaneci girişi gereklidir!");
+            return;
+        }
+
         System.out.print("Silinecek kitabın ISBN'i: ");
         String isbn = scanner.nextLine();
 
@@ -192,6 +218,29 @@ public class LibraryConsoleUI {
             System.out.println("Kitap silindi.");
         } else {
             System.out.println("Kitap bulunamadı (silinemedi).");
+        }
+    }
+
+    private void loginLibrarian() {
+        System.out.print("Kullanıcı adı: ");
+        String username = scanner.nextLine();
+
+        System.out.print("Şifre: ");
+        String password = scanner.nextLine();
+
+        if (authService.login(username, password)) {
+            System.out.println("Giriş başarılı! Hoş geldiniz, " + authService.getCurrentLibrarianName());
+        } else {
+            System.out.println("Giriş başarısız! Kullanıcı adı veya şifre hatalı.");
+        }
+    }
+
+    private void logoutLibrarian() {
+        if (authService.isLoggedIn()) {
+            authService.logout();
+            System.out.println("Çıkış yapıldı.");
+        } else {
+            System.out.println("Zaten giriş yapılmamış.");
         }
     }
 

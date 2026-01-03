@@ -74,4 +74,5 @@ public class LibraryManagerTest {
         assertTrue(manager.removeBook("1"), "removeBook true dönmeli");
         assertNull(manager.findBookByIsbn("1"), "Silinen kitap artık bulunmamalı");
     }
+
 }

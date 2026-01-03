@@ -1,6 +1,7 @@
 package com.zegeferhatlar.library.service;
 
 import com.zegeferhatlar.library.model.Book;
+import com.zegeferhatlar.library.model.Librarian;
 import com.zegeferhatlar.library.model.Loan;
 import com.zegeferhatlar.library.model.Member;
 import com.zegeferhatlar.library.model.StudentMember;
@@ -21,12 +22,14 @@ public class FileStorage {
     private final Path booksFile;
     private final Path membersFile;
     private final Path loansFile;
+    private final Path librariansFile;
 
     public FileStorage() {
         this.dataDir = Path.of("data");
         this.booksFile = dataDir.resolve("books.csv");
         this.membersFile = dataDir.resolve("members.csv");
         this.loansFile = dataDir.resolve("loans.csv");
+        this.librariansFile = dataDir.resolve("librarians.csv");
     }
 
     public void ensureDataDir() throws IOException {
@@ -110,7 +113,8 @@ public class FileStorage {
                 String[] parts = splitCsvLine(line);
 
                 // En az: type,id,name olmalı
-                if (parts.length < 3) continue;
+                if (parts.length < 3)
+                    continue;
 
                 // type,id,name,maxBooks
                 String type = parts[0];
@@ -134,7 +138,7 @@ public class FileStorage {
 
                 if ("STUDENT".equalsIgnoreCase(type)) {
                     StudentMember sm = new StudentMember(id, name);
-                    sm.setMaxBooks(maxBooks);   // <-- ASIL DÜZELTME
+                    sm.setMaxBooks(maxBooks); // <-- ASIL DÜZELTME
                     members.add(sm);
                 }
             }
@@ -213,6 +217,54 @@ public class FileStorage {
         }
 
         return loans;
+    }
+
+    // ------------------- LIBRARIANS -------------------
+
+    public void saveLibrarians(List<Librarian> librarians) throws IOException {
+        ensureDataDir();
+        try (BufferedWriter writer = Files.newBufferedWriter(librariansFile)) {
+            writer.write("username,password,name");
+            writer.newLine();
+
+            for (Librarian l : librarians) {
+                writer.write(
+                        csv(l.getUsername()) + "," + csv(l.getPassword()) + "," + csv(l.getName()));
+                writer.newLine();
+            }
+        }
+    }
+
+    public List<Librarian> loadLibrarians() throws IOException {
+        ensureDataDir();
+        if (!Files.exists(librariansFile))
+            return new ArrayList<>();
+
+        List<Librarian> librarians = new ArrayList<>();
+        try (BufferedReader reader = Files.newBufferedReader(librariansFile)) {
+            String line = reader.readLine(); // header
+            if (line == null)
+                return librarians;
+
+            while ((line = reader.readLine()) != null) {
+                String[] parts = splitCsvLine(line);
+                // username,password,name
+                if (parts.length < 3)
+                    continue;
+
+                String username = uncsv(parts[0]);
+                String password = uncsv(parts[1]);
+                String name = uncsv(parts[2]);
+
+                if (username.isBlank() || password.isBlank()) {
+                    continue; // bozuk satır
+                }
+
+                Librarian librarian = new Librarian(username, password, name);
+                librarians.add(librarian);
+            }
+        }
+        return librarians;
     }
 
     // ------------------- CSV helpers -------------------

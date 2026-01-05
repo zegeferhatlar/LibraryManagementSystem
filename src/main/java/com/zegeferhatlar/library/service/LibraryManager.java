@@ -29,8 +29,20 @@ public class LibraryManager implements Searchable {
 
     // --- Book operations ---
 
-    public void addBook(Book book) {
+    /**
+     * Adds a new book to the library.
+     * 
+     * @param book the book to add
+     * @return true if book was added successfully, false if book with same ISBN
+     *         already exists
+     */
+    public boolean addBook(Book book) {
+        // ISBN kontrolü: Aynı ISBN'e sahip kitap var mı?
+        if (findBookByIsbn(book.getIsbn()) != null) {
+            return false; // Aynı ISBN'e sahip kitap zaten var
+        }
         books.add(book);
+        return true;
     }
 
     public boolean removeBook(String isbn) {
@@ -46,8 +58,20 @@ public class LibraryManager implements Searchable {
 
     // --- Member operations ---
 
-    public void addMember(Member member) {
+    /**
+     * Adds a new member to the library.
+     * 
+     * @param member the member to add
+     * @return true if member was added successfully, false if member with same ID
+     *         already exists
+     */
+    public boolean addMember(Member member) {
+        // ID kontrolü: Aynı ID'ye sahip üye var mı?
+        if (findMemberById(member.getId()) != null) {
+            return false; // Aynı ID'ye sahip üye zaten var
+        }
         members.add(member);
+        return true;
     }
 
     public Member findMemberById(int id) {
@@ -55,6 +79,16 @@ public class LibraryManager implements Searchable {
                 .filter(m -> m.getId() == id)
                 .findFirst()
                 .orElse(null);
+    }
+
+    /**
+     * Removes a member from the library by ID.
+     * 
+     * @param memberId the ID of the member to remove
+     * @return true if member was removed successfully, false if member not found
+     */
+    public boolean removeMember(int memberId) {
+        return members.removeIf(m -> m.getId() == memberId);
     }
 
     // --- Librarian operations ---
@@ -100,29 +134,29 @@ public class LibraryManager implements Searchable {
     public Loan borrowBook(int memberId, String isbn) {
         Member member = findMemberById(memberId);
         if (member == null) {
-            System.out.println("Member bulunamadı: " + memberId);
+            System.out.println("Üye bulunamadı: " + memberId);
             return null;
         }
 
         Book book = findBookByIsbn(isbn);
         if (book == null) {
-            System.out.println("Book bulunamadı: " + isbn);
+            System.out.println("Kitap bulunamadı: " + isbn);
             return null;
         }
 
         if (!book.isAvailable()) {
-            System.out.println("Book şu anda ödünçte: " + book.getTitle());
+            System.out.println("Kitap şu anda ödünçte: " + book.getTitle());
             return null;
         }
 
-        // Bu member'ın aktif loan sayısını kontrol et (maxBooks limitine göre)
+        // Bu üyenin aktif ödünç sayısını kontrol et (maxBooks limitine göre)
         long activeLoansCount = loans.stream()
                 .filter(l -> l.getMember().getId() == memberId)
                 .filter(l -> l.getReturnDate() == null)
                 .count();
 
         if (activeLoansCount >= member.getMaxBooks()) {
-            System.out.println("Member maxBooks limitine ulaşmış: " + member.getName());
+            System.out.println("Üye maksimum kitap limitine ulaşmış: " + member.getName());
             return null;
         }
 
@@ -131,7 +165,7 @@ public class LibraryManager implements Searchable {
         Loan loan = new Loan(book, member);
         loans.add(loan);
 
-        System.out.println("Book ödünç verildi: " + book.getTitle() + " -> " + member.getName());
+        System.out.println("Kitap ödünç verildi: " + book.getTitle() + " -> " + member.getName());
         return loan;
     }
 
@@ -152,7 +186,7 @@ public class LibraryManager implements Searchable {
                 .orElse(null);
 
         if (loan == null) {
-            System.out.println("Aktif loan bulunamadı. MemberId: " + memberId + ", isbn: " + isbn);
+            System.out.println("Aktif ödünç kaydı bulunamadı. Üye ID: " + memberId + ", ISBN: " + isbn);
             return 0.0;
         }
 
@@ -161,7 +195,7 @@ public class LibraryManager implements Searchable {
 
         // Gecikme ücretini hesapla
         double fee = loan.calculateLateFee();
-        System.out.println("Book iade edildi: " + loan.getBook().getTitle() +
+        System.out.println("Kitap iade edildi: " + loan.getBook().getTitle() +
                 ", gecikme ücreti: " + fee);
 
         return fee;
@@ -205,7 +239,6 @@ public class LibraryManager implements Searchable {
             storage.saveMembers(members);
             storage.saveLoans(loans);
             storage.saveLibrarians(librarians);
-            System.out.println("Veriler dosyaya kaydedildi. (data/ klasörü)");
         } catch (Exception e) {
             System.out.println("Kaydetme hatası: " + e.getMessage());
         }

@@ -70,10 +70,6 @@ public class LibraryManager implements Searchable {
                 .orElse(null);
     }
 
-    public List<Librarian> getLibrarians() {
-        return librarians;
-    }
-
     // --- Searchable implementation ---
 
     @Override
@@ -189,16 +185,6 @@ public class LibraryManager implements Searchable {
     public List<Loan> getActiveLoans() {
         return loans.stream()
                 .filter(l -> l.getReturnDate() == null)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Returns active loans for a specific member.
-     */
-    public List<Loan> getActiveLoansForMember(int memberId) {
-        return loans.stream()
-                .filter(l -> l.getReturnDate() == null)
-                .filter(l -> l.getMember().getId() == memberId)
                 .collect(Collectors.toList());
     }
 

@@ -138,7 +138,7 @@ public class FileStorage {
 
                 if ("STUDENT".equalsIgnoreCase(type)) {
                     StudentMember sm = new StudentMember(id, name);
-                    sm.setMaxBooks(maxBooks); // <-- ASIL DÜZELTME
+                    sm.setMaxBooks(maxBooks);
                     members.add(sm);
                 }
             }

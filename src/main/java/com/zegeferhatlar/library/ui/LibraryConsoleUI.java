@@ -107,7 +107,6 @@ public class LibraryConsoleUI {
 
         StudentMember member = new StudentMember(id, name);
         manager.addMember(member);
-
         System.out.println("Öğrenci üye eklendi.");
     }
 
